@@ -1,6 +1,7 @@
 <?php
 require_once 'Zend/Http/Client.php';
-
+define( 'APP_PATH', '/Users/anon/Sites/anoncom.net/application/modules/games' );
+ini_set( 'INCLUDE_PATH', ini_get( 'INCLUDE_PATH' ) . PATH_SEPARATOR . APP_PATH );
 
 $crawler = new AmusementCrawler;
 
@@ -20,7 +21,7 @@ class AmusementCrawler
 		foreach ( $this->_getGameProducts() as $gameKey => $gameName )
 		{
 			
-			foreach ( $this->_getPrefs() as $code => $pref )
+			foreach ( $this->_getPrefs() as $prefCode => $pref )
 			{
 				$path = '/result.html';
 				do {
@@ -30,7 +31,7 @@ class AmusementCrawler
 						'finder'	=> 'area',
 						'gkey'		=> $gameKey,
 						'area'		=> '-1',
-						'pref'		=> $code,
+						'pref'		=> $prefCode,
 					];
 					$client->setParameterGet( $params );
 					$response = $client->request();
@@ -49,7 +50,9 @@ class AmusementCrawler
 								$detail = $response->getBody();
 								$detail = mb_convert_encoding( $detail, 'UTF-8', 'sjis-win' );
 								$datas = $this->_parseDetail( $detail );
-								var_dump($datas);
+								$datas[ 'store_code' ] = $storeCode;
+								$datas[ 'pref_code' ] = $prefCode;
+								$this->_registerStore( $datas );
 							}
 							
 							
@@ -247,6 +250,50 @@ class AmusementCrawler
 			$data[ 'longitude' ] = $matches[ 2 ];
 		}
 		return $data;
+	}
+	
+	private function _registerStore( array $datas )
+	{
+		/*
+		require_once APP_PATH . '/models/Store.php';
+		require_once APP_PATH . '/models/StoreMapper.php';
+		require_once APP_PATH . '/models/Store/Location.php';
+		require_once APP_PATH . '/models/Store/LocationMapper.php';
+		require_once APP_PATH . '/models/Store/Products.php';
+		require_once APP_PATH . '/models/Store/ProductsMapper.php';
+		
+		$store = new Games_Model_Store;
+		$store
+			->setStoreCode( $datas[ 'store_code' ] )
+			->setName( $datas[ 'name' ] )
+			->setPrefCode( $datas[ 'pref_code' ] )
+			->setAddress( $datas[ 'address' ] )
+			->setAccess( $datas[ 'access' ] )
+			->setTimeOpen( $datas[ 'open' ] )
+			->setTimeClose( $datas[ 'close' ] )
+		;
+		$mapper = new Games_Model_StoreMapper;
+		$id = $mapper->save($store);
+		
+		$st_loc = new Games_Model_Store_Location;
+		$st_loc
+			->setStoreId( $id )
+			->setLatitude( $datas[ 'latitude' ] )
+			->setLongitude( $datas[ 'longitude' ] )
+		;
+		$mapper = new Games_Model_Store_LocationMapper;
+		$mapper->save( $st_loc );
+		
+		$st_prod = new Games_Model_Store_Products;
+		$st_prod
+			->setProductId( 1 )
+			->setNum( 1 )
+			->setServiceEam( $datas[ 'paseli' ] ? 1 : 0 )
+		;
+		$mapper = new Games_Model_Store_ProductsMapper;
+		$mapper->save( $st_prod );
+		*/
+		var_dump($datas);
 	}
 }
 
