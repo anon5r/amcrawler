@@ -1,6 +1,6 @@
 <?php
 require_once 'Zend/Http/Client.php';
-define( 'APP_PATH', '/Users/anon/Sites/anoncom.net/application/modules/games' );
+define( 'APP_PATH', 'application/modules/games' );
 ini_set( 'INCLUDE_PATH', ini_get( 'INCLUDE_PATH' ) . PATH_SEPARATOR . APP_PATH );
 
 $crawler = new AmusementCrawler;
